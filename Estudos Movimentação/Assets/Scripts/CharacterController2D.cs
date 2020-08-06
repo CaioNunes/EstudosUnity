@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CharacterController2D : MonoBehaviour
 {
@@ -19,6 +20,20 @@ public class CharacterController2D : MonoBehaviour
     private bool m_FacingRight = true; //Se o player está virado pra direita
     private Vector3 m_Velocity = Vector3.zero;
 
+    [Header("Events")]
+    [Space]
+
+    public UnityEvent OnLandEvent;
+    [System.Serializable]
+    public class BoolEvent : UnityEvent<bool> { }
+
+    private void Awake()
+    {
+        m_RigidBody2D = GetComponent<Rigidbody2D>();
+
+        if (OnLandEvent == null)
+            OnLandEvent = new UnityEvent();
+    }
 
     private void FixedUpdate()
     {
@@ -33,13 +48,13 @@ public class CharacterController2D : MonoBehaviour
                 m_Grounded = true;
 
                 if (!wasGrounded) {
-                    //Algo
+                    OnLandEvent.Invoke();
                 }
             }
         }
     }
 
-    void Move(float move, bool jump)
+    public void Move(float move, bool jump)
     {
         if (m_Grounded || m_AirControl) {
 
